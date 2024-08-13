@@ -2,223 +2,237 @@
 <html lang="en">
 
 <head>
-  <title>Builder</title>
-  <style>
-    .container>section {
-      border: 1px solid #acacac;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
+    <title>Builder</title>
+    <style>
+        .container > section {
+            border: 1px solid #acacac;
+            border-radius: 5px;
+            padding: 10px;
+        }
 
-    .container>section>header {
-      font-size: 1.2em;
-    }
+        .container > section > header {
+            font-size: 1.2em;
+        }
 
-    .code-yaml {
-      font-family: monospace;
-      font-size: 1.1em;
-      padding: 10px;
-      margin: 10px 0 10px;
-      background: antiquewhite;
-      word-break: break-all;
-    }
-  </style>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/@vueuse/shared"></script>
-  <script src="https://unpkg.com/@vueuse/core"></script>
-  <script src="js-yaml.min.js"></script>
+        section {
+            margin: 10px 0;
+        }
+        .code-yaml {
+            font-family: monospace;
+            font-size: 1.1em;
+            padding: 10px;
+            margin: 10px 0 10px;
+            background: antiquewhite;
+            word-break: break-all;
+        }
+    </style>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/@vueuse/shared"></script>
+    <script src="https://unpkg.com/@vueuse/core"></script>
+    <script src="js-yaml.min.js"></script>
 </head>
 
 <body>
-  <div class="container" id="app">
+<div class="container" id="app">
     <section>
-      <header>Параметри доступу до Bitwarden</header>
-      <p v-if="state.generateBitwardenCredentialsSecret">
-        <label>Bitwarden Machine Token: <input v-model="bwAuthToken" type="text"></label>
-      </p>
-      <p>
-        <label>Secret name: <input v-model="state.bwAuthTokenSecretName" type="text"></label>
-      </p>
-      <p v-if="state.generateBitwardenCredentialsSecret">
-        <label>Secret key: <input v-model="state.bwAuthTokenSecretKey" type="text"></label>
-      </p>
-      <p>
-        <label>
-          <input type="checkbox" v-model="state.generateBitwardenCredentialsSecret">
-          Generate secret
-        </label>
-      </p>
+        <header>Параметри доступу до Bitwarden</header>
+        <p v-if="state.generateBitwardenCredentialsSecret">
+            <label>Bitwarden Machine Token: <input v-model="bwAuthToken" type="text"></label>
+        </p>
+        <p>
+            <label>Secret name: <input v-model="state.bwAuthTokenSecretName" type="text"></label>
+        </p>
+        <p v-if="state.generateBitwardenCredentialsSecret">
+            <label>Secret key: <input v-model="state.bwAuthTokenSecretKey" type="text"></label>
+        </p>
+        <p>
+            <label>
+                <input type="checkbox" v-model="state.generateBitwardenCredentialsSecret">
+                Generate secret
+            </label>
+        </p>
     </section>
     <section>
-      <header>BitwardenSecret</header>
-      <p>
-        authToken.secretName: {{ state.bwAuthTokenSecretName }}
-      </p>
-      <p>
-        authToken.secretKey: {{ state.bwAuthTokenSecretKey }}
-      </p>
-      <p>
-        <label>spec.organizationId: <input v-model="state.organizationId" type="text"></label>
-      </p>
-      <p>
-        <label>BitwardenSecret.metadata.name: <input v-model="state.bitwardenSecretName"></label>
-      </p>
-    </section>
-
-    <section>
-      <p>
-        <label>spec.secretName: <input v-model="state.targetSecretName" type="text"></label>
-      </p>
-      <section>
-        <header>Mapping</header>
-        <table class="table">
-          <tr>
-            <th>secretKeyName</th>
-            <th>bwSecretId</th>
-            <th></th>
-          </tr>
-          <tr v-for="row in state.mappingRows">
-            <td><input type="text" v-model="row.secretKeyName"></td>
-            <td><input type="text" v-model="row.bwSecretId"></td>
-            <td><button @click="deleteMappingRow($event, row)">x</button></td>
-          </tr>
-        </table>
-        <button @click="addMappingRow">+</button>
-      </section>
-    </section>
-
-
-    <section>
-      <header>Що на виході</header>
-      <section v-if="state.generateBitwardenCredentialsSecret">
-        <header>Secret</header>
-        <article>
-          <pre class="code-yaml">{{ machineAccountSecretYaml }}</pre>
-        </article>
-      </section>
-      <section>
         <header>BitwardenSecret</header>
-        <article>
-          <pre class="code-yaml">{{ bitwardenSecretYaml }}</pre>
-        </article>
-      </section>
+        <p>
+            authToken.secretName: {{ state.bwAuthTokenSecretName }}
+        </p>
+        <p>
+            authToken.secretKey: {{ state.bwAuthTokenSecretKey }}
+        </p>
+        <p>
+            <label>spec.organizationId: <input v-model="state.organizationId" type="text"></label>
+        </p>
+        <p>
+            <label>BitwardenSecret.metadata.name: <input v-model="state.bitwardenSecretName"></label>
+        </p>
     </section>
-  </div>
 
-  <script>
-    const { createApp, ref } = Vue
+    <section>
+        <p>
+            <label>spec.secretName: <input v-model="state.targetSecretName" type="text"></label>
+        </p>
+        <section>
+            <header>Mapping</header>
+            <table class="table">
+                <tr>
+                    <th>secretKeyName</th>
+                    <th>bwSecretId</th>
+                    <th></th>
+                </tr>
+                <tr v-for="row in state.mappingRows">
+                    <td><input type="text" v-model="row.secretKeyName"></td>
+                    <td><input type="text" v-model="row.bwSecretId"></td>
+                    <td>
+                        <button @click="deleteMappingRow($event, row)">x</button>
+                    </td>
+                </tr>
+            </table>
+            <button @click="addMappingRow">+</button>
+        </section>
+    </section>
+
+
+    <section>
+        <header>Generated</header>
+        <section v-if="state.generateBitwardenCredentialsSecret">
+            <header>Secret</header>
+            <article>
+                <pre class="code-yaml">{{ machineAccountSecretYaml }}</pre>
+                <span v-if="clipboard.isSupported"><button
+                        @click="copyMachineAccountSecretManifest">Copy</button></span>
+            </article>
+        </section>
+        <section>
+            <header>BitwardenSecret</header>
+            <article>
+                <pre class="code-yaml">{{ bitwardenSecretYaml }}</pre>
+                <span v-if="clipboard.isSupported"><button @click="copyBwSecretManifest">Copy</button></span>
+            </article>
+        </section>
+    </section>
+</div>
+
+<script>
+    const {createApp, ref} = Vue
 
     createApp({
-      setup() {
-        const state = window.VueUse.useLocalStorage(
-          'BitwardenSecret-manifest-builder',
-          {
-            bwAuthTokenSecretName: 'bw-auth-token',
-            bwAuthTokenSecretKey: 'token',
-            targetSecretName: `secret-${Date.now()}`,
-            mappingRows: [],
-            generateBitwardenCredentialsSecret: false,
-            organizationId: '',
-            bitwardenSecretName: 'bitwardensecret-sample',
-          },
-          { mergeDefaults: true }
-        )
+        setup() {
+            const state = window.VueUse.useLocalStorage(
+                'BitwardenSecret-manifest-builder',
+                {
+                    bwAuthTokenSecretName: 'bw-auth-token',
+                    bwAuthTokenSecretKey: 'token',
+                    targetSecretName: `secret-${Date.now()}`,
+                    mappingRows: [],
+                    generateBitwardenCredentialsSecret: false,
+                    organizationId: '',
+                    bitwardenSecretName: 'bitwardensecret-sample',
+                },
+                {mergeDefaults: true}
+            )
 
-        const bwAuthToken = ref('')
+            const clipboard = window.VueUse.useClipboard()
 
-        return {
-          state,
-          bwAuthToken,
-        }
-      },
-      methods: {
-        addMappingRow() {
-          this.state.mappingRows.push({
-            bwSecretId: '',
-            secretKeyName: '',
-          })
-        },
-        deleteMappingRow(event, row) {
-          const index = this.state.mappingRows.findIndex(item => item === row)
-          if (index === -1) {
-            return
-          }
+            const bwAuthToken = ref('')
 
-          this.state.mappingRows.splice(index, 1)
-        }
-      },
-      computed: {
-        machineAccountSecret() {
-          return {
-            apiVersion: 'v1',
-            kind: 'Secret',
-            type: 'Opaque',
-            metadata: {
-              name: this.state.bwAuthTokenSecretName
-            },
-            data: {
-              [this.state.bwAuthTokenSecretKey]: btoa(this.bwAuthToken)
+            return {
+                state,
+                bwAuthToken,
+                clipboard,
             }
-          }
         },
-        resultSecret() {
-          return {
-            apiVersion: 'v1',
-            kind: 'Secret',
-            type: 'Opaque',
-            metadata: {
-              name: this.state.targetSecretName
+        methods: {
+            addMappingRow() {
+                this.state.mappingRows.push({
+                    bwSecretId: '',
+                    secretKeyName: '',
+                })
             },
-            data: Object.fromEntries(this.state.mappingRows.map(row => {
-              return [row.secretKeyName, `<value of secret ${row.bwSecretId}>`]
-            }))
-          }
-        },
-        bitwardenSecret() {
-          return {
-            apiVersion: "k8s.bitwarden.com/v1",
-            kind: "BitwardenSecret",
-            metadata: {
-              labels: {
-                "app.kubernetes.io/name": "bitwardensecret",
-                "app.kubernetes.io/instance": "bitwardensecret-sample",
-                "app.kubernetes.io/part-of": "sm-operator",
-                "app.kubernetes.io/managed-by": "kustomize",
-                "app.kubernetes.io/created-by": "sm-operator",
-              },
-              name: `${this.state.bitwardenSecretName}`,
-            },
-            spec: {
-              organizationId: `${this.state.organizationId}`,
-              secretName: `${this.state.targetSecretName}`,
-              map: this.state.mappingRows.map(row => {
-                return {
-                  bwSecretId: `${row.bwSecretId}`,
-                  secretKeyName: `${row.secretKeyName}`,
+            deleteMappingRow(event, row) {
+                const index = this.state.mappingRows.findIndex(item => item === row)
+                if (index === -1) {
+                    return
                 }
-              }),
-              authToken: {
-                secretName: `${this.state.bwAuthTokenSecretName}`,
-                secretKey: `${this.state.bwAuthTokenSecretKey}`,
-              }
-            }
-          }
-        },
-        secretJson() {
-          const result = JSON.stringify(this.machineAccountSecret, null, '  ')
 
-          return result
+                this.state.mappingRows.splice(index, 1)
+            },
+            copyMachineAccountSecretManifest() {
+                this.clipboard.copy(this.machineAccountSecretYaml)
+            },
+            copyBwSecretManifest() {
+                this.clipboard.copy(this.bitwardenSecretYaml)
+            }
         },
-        machineAccountSecretYaml() {
-          return jsyaml.dump(this.machineAccountSecret)
-        },
-        bitwardenSecretYaml() {
-          return jsyaml.dump(this.bitwardenSecret)
-        },
-      }
+        computed: {
+            machineAccountSecret() {
+                return {
+                    apiVersion: 'v1',
+                    kind: 'Secret',
+                    type: 'Opaque',
+                    metadata: {
+                        name: this.state.bwAuthTokenSecretName
+                    },
+                    data: {
+                        [this.state.bwAuthTokenSecretKey]: btoa(this.bwAuthToken)
+                    }
+                }
+            },
+            /*resultSecret() {
+              return {
+                apiVersion: 'v1',
+                kind: 'Secret',
+                type: 'Opaque',
+                metadata: {
+                  name: this.state.targetSecretName
+                },
+                data: Object.fromEntries(this.state.mappingRows.map(row => {
+                  return [row.secretKeyName, `<value of secret ${row.bwSecretId}>`]
+                }))
+              }
+            },*/
+            bitwardenSecret() {
+                return {
+                    apiVersion: "k8s.bitwarden.com/v1",
+                    kind: "BitwardenSecret",
+                    metadata: {
+                        labels: {
+                            "app.kubernetes.io/name": "bitwardensecret",
+                            "app.kubernetes.io/instance": `${this.state.bitwardenSecretName}`,
+                            "app.kubernetes.io/part-of": "sm-operator",
+                            "app.kubernetes.io/managed-by": "kustomize",
+                            "app.kubernetes.io/created-by": "sm-operator",
+                        },
+                        name: `${this.state.bitwardenSecretName}`,
+                    },
+                    spec: {
+                        organizationId: `${this.state.organizationId}`,
+                        secretName: `${this.state.targetSecretName}`,
+                        map: this.state.mappingRows.map(row => {
+                            return {
+                                bwSecretId: `${row.bwSecretId}`,
+                                secretKeyName: `${row.secretKeyName}`,
+                            }
+                        }),
+                        authToken: {
+                            secretName: `${this.state.bwAuthTokenSecretName}`,
+                            secretKey: `${this.state.bwAuthTokenSecretKey}`,
+                        }
+                    }
+                }
+            },
+            /*secretJson() {
+                return JSON.stringify(this.machineAccountSecret, null, '  ')
+            },*/
+            machineAccountSecretYaml() {
+                return jsyaml.dump(this.machineAccountSecret)
+            },
+            bitwardenSecretYaml() {
+                return jsyaml.dump(this.bitwardenSecret)
+            },
+        }
     }).mount('#app')
-  </script>
+</script>
 </body>
 
 </html>
